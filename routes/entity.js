@@ -11,6 +11,6 @@ router.use(isAuth);
 
 router.get("/", validate(entityValidation.list), entityController.list);
 router.get("/:id", validate(entityValidation.get), entityController.get);
-router.update("/:id", validate(entityValidation.update), entityController.update);
+router.put("/:id", validate(entityValidation.update), entityController.update);
 
 module.exports = router;
