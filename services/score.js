@@ -1,29 +1,20 @@
-const Entity = require("../models/entities");
+const Score = require("../models/scores");
 const generatePagination = require("../utilities/generate-pagination");
 const { throwError } = require("../utilities/responses");
 const toJSON = require("../utilities/mongo-to-json");
 
-exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search }) => {
+exports.list = async ({ page, limit, sortOrder, sortField, filters = {} }) => {
     const { page: pageNumber, limit: perPage, skip, sort } = generatePagination.getPagination({ page, limit, sortOrder, sortField });
-    const searchRegex = RegExp(search, "ig");
 
     const query = [
         {
             $match: {
-                ...filters,
-                $or: [
-                    {
-                        name: { $regex: searchRegex }
-                    },
-                    {
-                        description: { $regex: searchRegex }
-                    }
-                ]
+                ...filters
             }
         },
         {
             $facet: {
-                entities: [
+                scores: [
                     {
                         $sort: sort
                     },
@@ -42,9 +33,20 @@ exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search 
                         }
                     },
                     {
+                        $lookup: {
+                            from: "entities",
+                            localField: "entity_id",
+                            foreignField: "_id",
+                            as: "entity"
+                        }
+                    },
+                    {
                         $set: {
                             user: {
                                 $arrayElemAt: ["$user", 0]
+                            },
+                            entity: {
+                                $arrayElemAt: ["$entity", 0]
                             }
                         }
                     },
@@ -58,7 +60,12 @@ exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search 
                                 name: "$user.name",
                                 photo: "$user.photo",
                             },
-                            thumbnail: 1,
+                            entity: {
+                                id: "$entity._id",
+                                name: "$entity.name"
+                            },
+                            scores: 1,
+                            timesplayed: 1,
                         }
                     }
                 ],
@@ -78,59 +85,20 @@ exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search 
         }
     ];
 
-    const res = await Entity.aggregate(query);
+    const res = await Score.aggregate(query);
 
-    let entities = res[0].entities;
+    let scores = res[0].scores;
     const total = res[0].total;
 
     const pagination = generatePagination({ page: pageNumber, limit: perPage, skip, total });
 
-    return { entities, pagination };
+    return { scores, pagination };
 };
 
-exports.create = async ({ user_id, data }) => {
-    let res = await (new Entity({
-        user_id,
-        ...data
-    })).save();
+exports.add = async ({ entity_id, user_id, data }) => {
+    let res = await Score.findOneAndUpdate({ entity_id, user_id }, { $push: { ...(data.score ? {scores: data.score} : {}), ...(data.timeplayed ? {timesplayed: data.timeplayed} : {}) } }, { new: true, upsert: true });
 
     res = toJSON(res);
 
     return res;
-};
-
-exports.get = async ({ id, approved }) => {
-    let entity = await Entity.findOne({ _id: id, approved });
-
-    if (entity) {
-        entity = toJSON(entity);
-        return entity;
-    }
-    else {
-        throw throwError("The entity does not exist", "NOT_FOUND", 404);
-    }
-};
-
-exports.update = async ({ id, data }) => {
-    data = flatten(data);
-    let entity = await Entity.findOneAndUpdate({ _id: id }, { ...data }, { new: true });
-
-    if (entity) {
-        entity = toJSON(entity);
-        return entity;
-    }
-    else {
-        throw throwError("The entity does not exist", "NOT_FOUND", 404);
-    }
-};
-
-exports.delete = async (id) => {
-    let entity = await Entity.findOneAndDelete({ _id: id });
-
-    if (entity) {
-        return true;
-    }
-    else {
-        throw throwError("The entity does not exist", "NOT_FOUND", 404);
-    }
 };
