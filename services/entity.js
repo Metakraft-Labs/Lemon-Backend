@@ -1,6 +1,8 @@
+const mongoose = require("mongoose");
 const Entity = require("../models/entities");
 const generatePagination = require("../utilities/generate-pagination");
 const { throwError } = require("../utilities/responses");
+const { flatten } = require("../utilities/objects");
 const toJSON = require("../utilities/mongo-to-json");
 
 exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search }) => {
@@ -59,6 +61,9 @@ exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search 
                                 photo: "$user.photo",
                             },
                             thumbnail: 1,
+                            type: 1,
+                            created_at: 1,
+                            updated_at: 1,
                         }
                     }
                 ],
@@ -91,6 +96,7 @@ exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search 
 exports.create = async ({ user_id, data }) => {
     let res = await (new Entity({
         user_id,
+        slug: new mongoose.Types.ObjectId(),
         ...data
     })).save();
 

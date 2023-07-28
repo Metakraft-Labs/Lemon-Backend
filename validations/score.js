@@ -7,7 +7,7 @@ exports.list = {
         sortOrder: Joi.string().optional().default("desc"),
         page: Joi.number().optional().default(1),
         limit: Joi.number().optional().default(10),
-        filter: Joi.object({
+        filters: Joi.object({
             entity_id: Joi.string().optional(),
             user_id: Joi.string().default(true),
         }).optional(),

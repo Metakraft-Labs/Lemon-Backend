@@ -5,7 +5,7 @@ const { flatten } = require("../utilities/objects");
 
 exports.update = async (user, data) => {
     if (data.wallet && user.wallet) {
-        throw throwError("User already has a wallet");
+        throw throwError("User already has a wallet", "BAD_REQUEST", 400);
     }
 
     data = flatten(data);
