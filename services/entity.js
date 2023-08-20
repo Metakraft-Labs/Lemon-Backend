@@ -61,6 +61,7 @@ exports.list = async ({ page, limit, sortOrder, sortField, filters = {}, search 
                                 photo: "$user.photo",
                             },
                             thumbnail: 1,
+                            description: 1,
                             type: 1,
                             created_at: 1,
                             updated_at: 1,
