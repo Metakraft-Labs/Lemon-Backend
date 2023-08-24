@@ -13,7 +13,7 @@ exports.login = async (wallet) => {
     return res;
 };
 
-exports.register = async ({ wallet, email, ref_code }) => {
+exports.register = async ({ wallet, email, ref_code, name }) => {
     let res = await User.findOne({ email });
 
     if (!res) {
@@ -27,7 +27,7 @@ exports.register = async ({ wallet, email, ref_code }) => {
 
 
         res = await (new User({
-            wallet, email,
+            wallet, email, name,
             ...(referrer ? {referral: {
                 code: ref_code,
                 user: referrer._id

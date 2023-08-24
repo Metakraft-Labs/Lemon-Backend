@@ -23,8 +23,8 @@ exports.login = catchAsync(async (req, res) => {
 });
 
 exports.register = catchAsync(async (req, res) => {
-    const { wallet, email, ref_code } = req.body;
-    const user = await authService.register({ wallet, email, ref_code });
+    const { wallet, email, ref_code, name } = req.body;
+    const user = await authService.register({ wallet, email, ref_code, name });
 
     const ip = (
         req.headers["x-forwarded-for"] ||
