@@ -10,7 +10,7 @@ exports.register = {
     body: Joi.object({
         wallet: Joi.string().optional().allow(null).default(null),
         email: Joi.string().email().required(),
-        name: Joi.string().string().required(),
+        name: Joi.string().required(),
         ref_code: Joi.string().optional(),
     })
 };
