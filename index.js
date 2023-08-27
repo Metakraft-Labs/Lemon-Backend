@@ -11,7 +11,9 @@ const routes = require("./routes");
 connect(mongoose);
 
 app.use(express.json({ limit: "50mb" }));
-app.use(fileUpload());
+app.use(fileUpload({
+    createParentPath: true
+}));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }))
 app.use(cors());
 app.use(helmet());

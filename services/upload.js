@@ -20,5 +20,7 @@ exports.upload = async (file) => {
     }
   );
 
+  await fs.unlinkSync(path.join(__dirname, `/uploads/${file.name}`));
+
   return res?.data;
 };
