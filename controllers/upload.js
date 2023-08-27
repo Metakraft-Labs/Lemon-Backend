@@ -9,3 +9,12 @@ exports.upload = catchAsync(async (req, res) => {
 
     return sendResponse(res, data);
 });
+
+exports.s3 = catchAsync(async (req, res) => {
+    const { slug } = req.body;
+    const { file } = req.files;
+
+    const data = await uploadService.s3(file, slug);
+
+    return sendResponse(res, data);
+});

@@ -8,6 +8,8 @@
     "start": "node -r dotenv/config index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.400.0",
+    "aws-sdk": "^2.1445.0",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -20,7 +22,8 @@
     "helmet": "^7.0.0",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.2.1"
+    "mongoose": "^7.2.1",
+    "unzipper": "^0.10.14"
   },
   "repository": {
     "type": "git",
