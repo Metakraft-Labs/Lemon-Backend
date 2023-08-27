@@ -60,10 +60,12 @@ const uploadS3 = async (zip, key, promises) => {
     const fileName = entry.path;
     const type = entry.type;
     if (type === 'File') {
+      const entryMimeType = mime.lookup(entryName);
       const uploadParams = {
         Bucket: "games-meta",
         Key: `games/${key}/${fileName}`,
         Body: entry,
+        ContentType: entryMimeType,
       };
 
       promises.push(s3.send(new PutObjectCommand(uploadParams)));
