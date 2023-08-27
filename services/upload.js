@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require("path");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const unzipper = require("unzipper");
+const mime = require('mime-types');
 
 const s3 = new S3Client({
   region: 'us-east-1',
