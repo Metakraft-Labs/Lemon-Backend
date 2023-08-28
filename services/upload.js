@@ -5,6 +5,7 @@ const path = require("path");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const unzipper = require("unzipper");
 const mime = require('mime-types');
+const { randomUUID } = require("crypto")
 
 const s3 = new S3Client({
   region: 'us-east-1',
@@ -53,6 +54,29 @@ exports.s3 = async (file, slug) => {
   await fs.unlinkSync(path.join(__dirname, `/uploads/${file.name}`));
 
   return true;
+};
+
+exports.singleS3 = async (file, slug) => {
+  await new Promise((res, rej) => {
+    return file.mv(path.join(__dirname, `/uploads/${file.name}`), (err) => {
+      if (err) return rej(err);
+      else return res();
+    })
+  })
+  const entryMimeType = mime.lookup(file.name);
+  const fileName = `${randomUUID()}-${file.name}`
+  const uploadParams = {
+    Bucket: "games-meta",
+    Key: `zips/${fileName}`,
+    Body: fs.createReadStream(path.join(__dirname, `/uploads/${file.name}`)),
+    ContentType: entryMimeType,
+  };
+
+  await s3.send(new PutObjectCommand(uploadParams));
+
+  fs.unlinkSync(path.join(__dirname, `/uploads/${file.name}`));
+
+  return `https://games-meta.s3.us-east-1.amazonaws.com/zips/${fileName}`;
 };
 
 const uploadS3 = async (zip, key, promises) => {

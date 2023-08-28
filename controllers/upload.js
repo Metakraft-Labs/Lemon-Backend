@@ -18,3 +18,11 @@ exports.s3 = catchAsync(async (req, res) => {
 
     return sendResponse(res, data);
 });
+
+exports.singleS3 = catchAsync(async (req, res) => {
+    const { file } = req.files;
+
+    const data = await uploadService.singleS3(file);
+
+    return sendResponse(res, data);
+});
