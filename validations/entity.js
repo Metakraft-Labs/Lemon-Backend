@@ -10,7 +10,7 @@ exports.list = {
         filters: Joi.object({
             type: Joi.string().valid("game", "ai", "metaverse").optional(),
             approved: Joi.boolean().forbidden().default(true),
-        }).optional(),
+        }).optional().default({ approved: true }),
     })
 };
 
